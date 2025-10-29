@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Fazenda Porteira Azul - Sistema Completo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        .alert-pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-blue-50 min-h-full">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+            <div>
+                <div class="mx-auto h-20 w-20 bg-green-600 rounded-full flex items-center justify-center">
+                    <span class="text-3xl">🚪</span>
+                </div>
+                <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Fazenda Porteira Azul
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-600">
+                    Sistema ERP - Faça login para continuar
+                </p>
+            </div>
+            <form class="mt-8 space-y-6" onsubmit="handleLogin(event)">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <label for="username" class="sr-only">Usuário</label>
+                        <input id="username" name="username" type="text" required 
+                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm" 
+                               placeholder="Usuário">
+                    </div>
+                    <div>
+                        <label for="password" class="sr-only">Senha</label>
+                        <input id="password" name="password" type="password" required 
+                               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm" 
+                               placeholder="Senha">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input id="remember-me" name="remember-me" type="checkbox" 
+                               class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
+                        <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                            Lembrar de mim
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" 
+                            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        Entrar
+                    </button>
+                </div>
+                
+                <div class="text-center">
+                    <p class="text-xs text-gray-500">
+                        Demo: admin/admin ou funcionario/123
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="hidden min-h-full">
+        <!-- Header -->
+        <header class="bg-green-800 text-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
+                            <span class="text-xl font-bold">🚪</span>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold">Fazenda Porteira Azul</h1>
+                            <p class="text-green-200 text-sm">Sistema ERP Completo</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm">Usuário: <span id="currentUser">Admin</span></span>
+                        <button onclick="logout()" class="bg-green-700 hover:bg-green-600 px-3 py-1 rounded text-sm">Sair</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="bg-green-700 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex space-x-8 py-3">
+                    <button onclick="showPage('mtd')" id="nav-mtd" class="bg-green-600 px-3 py-2 rounded text-sm font-medium">MTD</button>
+                    <button onclick="showPage('funcionarios')" id="nav-funcionarios" class="hover:bg-green-600 px-3 py-2 rounded text-sm">Funcionários</button>
+                    <button onclick="showPage('maquinario')" id="nav-maquinario" class="hover:bg-green-600 px-3 py-2 rounded text-sm">Maquinário</button>
+                    <button onclick="showPage('estoque')" id="nav-estoque" class="hover:bg-green-600 px-3 py-2 rounded text-sm">Estoque</button>
+                    <button onclick="showPage('relatorios')" id="nav-relatorios" class="hover:bg-green-600 px-3 py-2 rounded text-sm">Relatórios</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <!-- MTD Page -->
+            <div id="page-mtd" class="page-content">
+                <!-- Alerts Section -->
+                <div id="alertsSection" class="mb-6"></div>
+
+                <!-- Product Selection -->
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Módulo de Tomada de Decisão (MTD)</h2>
+                    <div class="flex space-x-4 mb-4">
+                        <button onclick="selectProduct('cafe')" id="btn-cafe" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded font-medium">
+                            ☕ Café
+                        </button>
+                        <button onclick="selectProduct('soja')" id="btn-soja" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded font-medium">
+                            🌱 Soja
+                        </button>
+                        <button onclick="selectProduct('milho')" id="btn-milho" class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded font-medium">
+                            🌽 Milho
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dashboard Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- Price Analysis Card -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Análise de Preços</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Preço Atual:</span>
+                                <span class="font-bold text-green-600" id="currentPrice">R$ 850,00</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Ponto de Equilíbrio:</span>
+                                <span class="font-bold text-red-600" id="breakEven">R$ 620,00</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Preço Alvo:</span>
+                                <span class="font-bold text-blue-600" id="targetPrice">R$ 744,00</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Margem Atual:</span>
+                                <span class="font-bold text-green-600" id="currentMargin">37.1%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stock Info Card -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Estoque Disponível</h3>
+                        <div class="text-center">
+                            <div class="text-3xl font-bold text-amber-600" id="stockQuantity">2.450</div>
+                            <div class="text-gray-600">sacas disponíveis</div>
+                            <div class="mt-3 text-sm text-gray-500">
+                                <div>Qualidade: <span class="font-medium" id="stockQuality">Tipo 2/3</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommendation Card -->
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Recomendação</h3>
+                        <div id="recommendation" class="text-center">
+                            <div class="text-4xl mb-2">✅</div>
+                            <div class="font-bold text-green-600 text-lg">VENDER AGORA</div>
+                            <div class="text-sm text-gray-600 mt-2">
+                                Preço acima do alvo com boa margem
+                            </div>
+                            <button onclick="simulateSale()" class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium w-full">
+                                Simular Venda
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Histórico de Preços</h3>
+                        <canvas id="priceChart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Sazonalidade</h3>
+                        <canvas id="seasonalityChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Configuration Panel -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Configurações</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="marginTarget" class="block text-sm font-medium text-gray-700 mb-2">Margem Desejada (%)</label>
+                            <input type="number" id="marginTarget" value="20" min="0" max="100" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                   onchange="updateAnalysis()">
+                        </div>
+                        <div>
+                            <label for="alertPrice" class="block text-sm font-medium text-gray-700 mb-2">Preço de Alerta (R$)</label>
+                            <input type="number" id="alertPrice" value="800" min="0" step="10"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                   onchange="updateAnalysis()">
+                        </div>
+                        <div>
+                            <label for="manualPrice" class="block text-sm font-medium text-gray-700 mb-2">Preço Manual (R$)</label>
+                            <input type="number" id="manualPrice" value="850" min="0" step="10"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                                   onchange="updateManualPrice()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Funcionários Page -->
+            <div id="page-funcionarios" class="page-content hidden">
+                <div class="mb-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold text-gray-800">Gerenciamento de Funcionários</h2>
+                        <button onclick="openEmployeeModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium">
+                            + Novo Funcionário
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Employee Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <div class="text-3xl font-bold text-green-600" id="totalEmployees">0</div>
+                        <div class="text-gray-600">Total</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <div class="text-3xl font-bold text-amber-600" id="cafeEmployees">0</div>
+                        <div class="text-gray-600">Café</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <div class="text-3xl font-bold text-green-600" id="sojaEmployees">0</div>
+                        <div class="text-gray-600">Soja</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <div class="text-3xl font-bold text-yellow-600" id="milhoEmployees">0</div>
+                        <div class="text-gray-600">Milho</div>
+                    </div>
+                </div>
+
+                <!-- Employee List -->
+                <div class="bg-white rounded-lg shadow-md">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-800">Lista de Funcionários</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Função</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cultura</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Salário</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Horas/Sem</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="employeeTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Maquinário Page -->
+            <div id="page-maquinario" class="page-content hidden">
+                <div class="mb-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold text-gray-800">Gerenciamento de Maquinário</h2>
+                        <button onclick="openMachineryModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium">
+                            + Nova Máquina
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Machinery Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <div class="text-3xl font-bold text-blue-600" id="totalMachinery">0</div>
+                        <div class="text-gray-600">Total</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <div class="text-3xl font-bold text-green-600" id="operatingMachinery">0</div>
+                        <div class="text-gray-600">Operando</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <div class="text-3xl font-bold text-yellow-600" id="maintenanceMachinery">0</div>
+                        <div class="text-gray-600">Manutenção</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                        <div class="text-3xl font-bold text-red-600" id="stoppedMachinery">0</div>
+                        <div class="text-gray-600">Parados</div>
+                    </div>
+                </div>
+
+                <!-- Machinery List -->
+                <div class="bg-white rounded-lg shadow-md">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-800">Lista de Maquinário</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Equipamento</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Motorista</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cultura</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Horas</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Combustível (L/h)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="machineryTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estoque Page -->
+            <div id="page-estoque" class="page-content hidden">
+                <div class="mb-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold text-gray-800">Gerenciamento de Estoque</h2>
+                        <button onclick="openStockModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium">
+                            + Nova Entrada
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stock Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold text-amber-600">☕ Café</h3>
+                                <div class="text-3xl font-bold text-gray-800" id="cafeStock">0</div>
+                                <div class="text-gray-600">sacas</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold text-green-600">🌱 Soja</h3>
+                                <div class="text-3xl font-bold text-gray-800" id="sojaStock">0</div>
+                                <div class="text-gray-600">sacas</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-bold text-yellow-600">🌽 Milho</h3>
+                                <div class="text-3xl font-bold text-gray-800" id="milhoStock">0</div>
+                                <div class="text-gray-600">sacas</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stock List -->
+                <div class="bg-white rounded-lg shadow-md">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-800">Detalhes do Estoque</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produto</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantidade</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qualidade</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Galpão</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="stockTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relatórios Page -->
+            <div id="page-relatorios" class="page-content hidden">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Relatórios Gerenciais</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">📊 Relatório de Vendas</h3>
+                        <p class="text-gray-600 mb-4">Análise completa das vendas por período e produto</p>
+                        <button onclick="generateSalesReport()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium">
+                            Gerar Relatório
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">👥 Folha de Pagamento</h3>
+                        <p class="text-gray-600 mb-4">Custos totais com funcionários por cultura</p>
+                        <button onclick="generatePayrollReport()" class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium">
+                            Gerar Relatório
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">🚜 Uso de Maquinário</h3>
+                        <p class="text-gray-600 mb-4">Horas trabalhadas e consumo de combustível</p>
+                        <button onclick="generateMachineryReport()" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded font-medium">
+                            Gerar Relatório
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Report Results -->
+                <div id="reportResults" class="mt-6 hidden">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Resultado do Relatório</h3>
+                        <div id="reportContent"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Employee Modal -->
+    <div id="employeeModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Cadastro de Funcionário</h3>
+            <form onsubmit="saveEmployee(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label for="empName" class="block text-sm font-medium text-gray-700 mb-2">Nome</label>
+                        <input type="text" id="empName" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label for="empFunction" class="block text-sm font-medium text-gray-700 mb-2">Função</label>
+                        <input type="text" id="empFunction" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label for="empCulture" class="block text-sm font-medium text-gray-700 mb-2">Cultura</label>
+                        <select id="empCulture" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Selecione...</option>
+                            <option value="cafe">Café</option>
+                            <option value="soja">Soja</option>
+                            <option value="milho">Milho</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="empSalary" class="block text-sm font-medium text-gray-700 mb-2">Salário (R$)</label>
+                        <input type="number" id="empSalary" required step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label for="empHours" class="block text-sm font-medium text-gray-700 mb-2">Horas/Semana</label>
+                        <input type="number" id="empHours" value="44" max="44" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                </div>
+                <div class="flex space-x-3 mt-6">
+                    <button type="button" onclick="closeEmployeeModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded font-medium">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium">
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Machinery Modal -->
+    <div id="machineryModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Cadastro de Maquinário</h3>
+            <form onsubmit="saveMachinery(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label for="machName" class="block text-sm font-medium text-gray-700 mb-2">Nome do Equipamento</label>
+                        <input type="text" id="machName" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label for="machDriver" class="block text-sm font-medium text-gray-700 mb-2">Motorista</label>
+                        <select id="machDriver" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Selecione...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="machCulture" class="block text-sm font-medium text-gray-700 mb-2">Cultura</label>
+                        <select id="machCulture" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Selecione...</option>
+                            <option value="cafe">Café</option>
+                            <option value="soja">Soja</option>
+                            <option value="milho">Milho</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="machHours" class="block text-sm font-medium text-gray-700 mb-2">Horas Trabalhadas</label>
+                        <input type="number" id="machHours" required min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label for="machFuel" class="block text-sm font-medium text-gray-700 mb-2">Consumo (L/h)</label>
+                        <input type="number" id="machFuel" required step="0.1" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label for="machStatus" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <select id="machStatus" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="operando">Operando</option>
+                            <option value="manutencao">Manutenção</option>
+                            <option value="parado">Parado</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex space-x-3 mt-6">
+                    <button type="button" onclick="closeMachineryModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded font-medium">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium">
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Stock Modal -->
+    <div id="stockModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Entrada de Estoque</h3>
+            <form onsubmit="saveStock(event)">
+                <div class="space-y-4">
+                    <div>
+                        <label for="stockProduct" class="block text-sm font-medium text-gray-700 mb-2">Produto</label>
+                        <select id="stockProduct" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Selecione...</option>
+                            <option value="cafe">Café</option>
+                            <option value="soja">Soja</option>
+                            <option value="milho">Milho</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="stockQuantity" class="block text-sm font-medium text-gray-700 mb-2">Quantidade (sacas)</label>
+                        <input type="number" id="stockQuantity" required min="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label for="stockQuality" class="block text-sm font-medium text-gray-700 mb-2">Qualidade</label>
+                        <select id="stockQuality" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Selecione...</option>
+                            <option value="Tipo 1">Tipo 1</option>
+                            <option value="Tipo 2">Tipo 2</option>
+                            <option value="Tipo 3">Tipo 3</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="stockWarehouse" class="block text-sm font-medium text-gray-700 mb-2">Galpão</label>
+                        <select id="stockWarehouse" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">Selecione...</option>
+                            <option value="Galpão A">Galpão A</option>
+                            <option value="Galpão B">Galpão B</option>
+                            <option value="Galpão C">Galpão C</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex space-x-3 mt-6">
+                    <button type="button" onclick="closeStockModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded font-medium">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium">
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sale Modal -->
+    <div id="saleModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Simulação de Venda</h3>
+            <div class="space-y-4">
+                <div>
+                    <label for="saleQuantity" class="block text-sm font-medium text-gray-700 mb-2">Quantidade (sacas)</label>
+                    <input type="number" id="saleQuantity" value="100" min="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <div class="bg-gray-50 p-4 rounded">
+                    <div class="flex justify-between mb-2">
+                        <span>Receita Bruta:</span>
+                        <span class="font-bold" id="grossRevenue">R$ 0,00</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span>Custo Total:</span>
+                        <span class="text-red-600" id="totalSaleCost">R$ 0,00</span>
+                    </div>
+                    <div class="flex justify-between text-lg font-bold border-t pt-2">
+                        <span>Lucro Líquido:</span>
+                        <span class="text-green-600" id="netProfit">R$ 0,00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex space-x-3 mt-6">
+                <button onclick="closeSaleModal()" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded font-medium">
+                    Cancelar
+                </button>
+                <button onclick="confirmSale()" class="flex-1 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium">
+                    Confirmar Venda
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let currentProduct = 'cafe';
+        let priceChart, seasonalityChart;
+
+        // Data storage (simulating database)
+        let employees = [
+            {id: 1, name: 'João Silva', function: 'Operador', culture: 'cafe', salary: 2800, hours: 44},
+            {id: 2, name: 'Maria Santos', function: 'Supervisora', culture: 'soja', salary: 3500, hours: 44},
+            {id: 3, name: 'Carlos Oliveira', function: 'Operador Rural', culture: 'milho', salary: 2400, hours: 44}
+        ];
+
+        let machinery = [
+            {id: 1, name: 'Trator John Deere 6110J', driver: 'João Silva', culture: 'cafe', hours: 1245, fuel: 12.5, status: 'operando'},
+            {id: 2, name: 'Caminhonete Ford Ranger', driver: 'Maria Santos', culture: 'soja', hours: 890, fuel: 8.2, status: 'manutencao'}
+        ];
+
+        let stock = [
+            {id: 1, product: 'cafe', quantity: 1200, quality: 'Tipo 2', warehouse: 'Galpão A', date: '2024-03-15'},
+            {id: 2, product: 'cafe', quantity: 1250, quality: 'Tipo 3', warehouse: 'Galpão A', date: '2024-03-22'},
+            {id: 3, product: 'soja', quantity: 1800, quality: 'Tipo 1', warehouse: 'Galpão B', date: '2024-04-10'}
+        ];
+
+        // Product data for MTD
+        const productData = {
+            cafe: {
+                name: 'Café',
+                currentPrice: 850,
+                breakEven: 620,
+                laborCost: 180,
+                inputCost: 320,
+                machineryCost: 120,
+                priceHistory: [720, 750, 780, 820, 840, 850],
+                seasonality: [800, 820, 850, 880, 860, 840, 820, 800, 780, 760, 780, 820]
+            },
+            soja: {
+                name: 'Soja',
+                currentPrice: 165,
+                breakEven: 120,
+                laborCost: 35,
+                inputCost: 65,
+                machineryCost: 20,
+                priceHistory: [140, 145, 150, 160, 162, 165],
+                seasonality: [150, 155, 160, 170, 165, 160, 155, 150, 145, 140, 145, 155]
+            },
+            milho: {
+                name: 'Milho',
+                currentPrice: 85,
+                breakEven: 65,
+                laborCost: 20,
+                inputCost: 30,
+                machineryCost: 15,
+                priceHistory: [70, 72, 75, 80, 82, 85],
+                seasonality: [75, 78, 80, 85, 82, 80, 78, 75, 72, 70, 72, 78]
+            }
+        };
+
+        // Authentication
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Simple authentication (in real app, this would be server-side)
+            if ((username === 'admin' && password === 'admin') || 
+                (username === 'funcionario' && password === '123')) {
+                currentUser = username;
+                document.getElementById('currentUser').textContent = username;
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                initializeApp();
+            } else {
+                showMessage('Usuário ou senha incorretos!', 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Initialize application
+        function initializeApp() {
+            initCharts();
+            updateAllDisplays();
+            checkAlerts();
+        }
+
+        // Page navigation
+        function showPage(pageId) {
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.add('hidden');
+            });
+            document.getElementById(`page-${pageId}`).classList.remove('hidden');
+            
+            document.querySelectorAll('[id^="nav-"]').forEach(btn => {
+                btn.className = 'hover:bg-green-600 px-3 py-2 rounded text-sm';
+            });
+            document.getElementById(`nav-${pageId}`).className = 'bg-green-600 px-3 py-2 rounded text-sm font-medium';
+
+            if (pageId === 'funcionarios') updateEmployeeDisplay();
+            if (pageId === 'maquinario') updateMachineryDisplay();
+            if (pageId === 'estoque') updateStockDisplay();
+        }
+
+        // MTD Functions
+        function initCharts() {
+            const priceCtx = document.getElementById('priceChart').getContext('2d');
+            const seasonalityCtx = document.getElementById('seasonalityChart').getContext('2d');
+
+            priceChart = new Chart(priceCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                    datasets: [{
+                        label: 'Preço (R$/saca)',
+                        data: productData[currentProduct].priceHistory,
+                        borderColor: 'rgb(34, 197, 94)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: false } }
+                }
+            });
+
+            seasonalityChart = new Chart(seasonalityCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    datasets: [{
+                        label: 'Preço Histórico (R$/saca)',
+                        data: productData[currentProduct].seasonality,
+                        backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                        borderColor: 'rgb(59, 130, 246)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: false } }
+                }
+            });
+        }
+
+        function selectProduct(product) {
+            currentProduct = product;
+            
+            document.querySelectorAll('[id^="btn-"]').forEach(btn => {
+                btn.className = 'bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded font-medium';
+            });
+            
+            const colors = {
+                cafe: 'bg-amber-600 hover:bg-amber-700 text-white',
+                soja: 'bg-green-600 hover:bg-green-700 text-white',
+                milho: 'bg-yellow-600 hover:bg-yellow-700 text-white'
+            };
+            
+            document.getElementById(`btn-${product}`).className = `${colors[product]} px-4 py-2 rounded font-medium`;
+            
+            updateMTDDisplay();
+            updateCharts();
+        }
+
+        function updateMTDDisplay() {
+            const data = productData[currentProduct];
+            const marginTarget = parseFloat(document.getElementById('marginTarget').value) / 100;
+            const targetPrice = data.breakEven * (1 + marginTarget);
+            const currentMargin = ((data.currentPrice - data.breakEven) / data.breakEven * 100);
+            
+            document.getElementById('currentPrice').textContent = `R$ ${data.currentPrice.toFixed(2)}`;
+            document.getElementById('breakEven').textContent = `R$ ${data.breakEven.toFixed(2)}`;
+            document.getElementById('targetPrice').textContent = `R$ ${targetPrice.toFixed(2)}`;
+            document.getElementById('currentMargin').textContent = `${currentMargin.toFixed(1)}%`;
+            
+            // Update stock quantity from stock data
+            const productStock = stock.filter(s => s.product === currentProduct)
+                                      .reduce((total, s) => total + s.quantity, 0);
+            document.getElementById('stockQuantity').textContent = productStock.toLocaleString();
+            
+            // Update recommendation
+            const recommendationDiv = document.getElementById('recommendation');
+            if (data.currentPrice >= targetPrice) {
+                recommendationDiv.innerHTML = `
+                    <div class="text-4xl mb-2">✅</div>
+                    <div class="font-bold text-green-600 text-lg">VENDER AGORA</div>
+                    <div class="text-sm text-gray-600 mt-2">Preço acima do alvo</div>
+                    <button onclick="simulateSale()" class="mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-medium w-full">
+                        Simular Venda
+                    </button>
+                `;
+            } else if (data.currentPrice >= data.breakEven) {
+                recommendationDiv.innerHTML = `
+                    <div class="text-4xl mb-2">⚠️</div>
+                    <div class="font-bold text-yellow-600 text-lg">AGUARDAR</div>
+                    <div class="text-sm text-gray-600 mt-2">Preço acima do equilíbrio</div>
+                    <button onclick="simulateSale()" class="mt-4 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded font-medium w-full">
+                        Simular Venda
+                    </button>
+                `;
+            } else {
+                recommendationDiv.innerHTML = `
+                    <div class="text-4xl mb-2">❌</div>
+                    <div class="font-bold text-red-600 text-lg">NÃO VENDER</div>
+                    <div class="text-sm text-gray-600 mt-2">Preço abaixo do equilíbrio</div>
+                    <button disabled class="mt-4 bg-gray-400 text-white px-4 py-2 rounded font-medium w-full cursor-not-allowed">
+                        Venda não recomendada
+                    </button>
+                `;
+            }
+        }
+
+        function updateCharts() {
+            const data = productData[currentProduct];
+            priceChart.data.datasets[0].data = data.priceHistory;
+            priceChart.update();
+            seasonalityChart.data.datasets[0].data = data.seasonality;
+            seasonalityChart.update();
+        }
+
+        function updateAnalysis() {
+            updateMTDDisplay();
+        }
+
+        function updateManualPrice() {
+            const newPrice = parseFloat(document.getElementById('manualPrice').value);
+            productData[currentProduct].currentPrice = newPrice;
+            updateMTDDisplay();
+        }
+
+        function checkAlerts() {
+            const alertsSection = document.getElementById('alertsSection');
+            alertsSection.innerHTML = '';
+            
+            Object.keys(productData).forEach(product => {
+                const data = productData[product];
+                const alertPrice = parseFloat(document.getElementById('alertPrice').value);
+                
+                if (data.currentPrice >= alertPrice) {
+                    const alert = document.createElement('div');
+                    alert.className = 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4 alert-pulse';
+                    alert.innerHTML = `
+                        <div class="flex items-center">
+                            <span class="text-xl mr-2">⚠️</span>
+                            <div>
+                                <p class="font-bold">Alerta de Preço - ${data.name}</p>
+                                <p class="text-sm">Preço atual (R$ ${data.currentPrice}/saca) atingiu zona de interesse!</p>
+                            </div>
+                        </div>
+                    `;
+                    alertsSection.appendChild(alert);
+                }
+            });
+        }
+
+        // Sale simulation
+        function simulateSale() {
+            document.getElementById('saleModal').classList.remove('hidden');
+            document.getElementById('saleModal').classList.add('flex');
+            updateSaleSimulation();
+        }
+
+        function updateSaleSimulation() {
+            const quantity = parseInt(document.getElementById('saleQuantity').value) || 0;
+            const data = productData[currentProduct];
+            
+            const grossRevenue = quantity * data.currentPrice;
+            const totalCost = quantity * data.breakEven;
+            const netProfit = grossRevenue - totalCost;
+            
+            document.getElementById('grossRevenue').textContent = `R$ ${grossRevenue.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('totalSaleCost').textContent = `R$ ${totalCost.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            document.getElementById('netProfit').textContent = `R$ ${netProfit.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+        }
+
+        function closeSaleModal() {
+            document.getElementById('saleModal').classList.add('hidden');
+            document.getElementById('saleModal').classList.remove('flex');
+        }
+
+        function confirmSale() {
+            const quantity = parseInt(document.getElementById('saleQuantity').value);
+            
+            // Update stock
+            const productStocks = stock.filter(s => s.product === currentProduct);
+            let remaining = quantity;
+            
+            for (let i = 0; i < productStocks.length && remaining > 0; i++) {
+                if (productStocks[i].quantity >= remaining) {
+                    productStocks[i].quantity -= remaining;
+                    remaining = 0;
+                } else {
+                    remaining -= productStocks[i].quantity;
+                    productStocks[i].quantity = 0;
+                }
+            }
+            
+            // Remove empty stock entries
+            stock = stock.filter(s => s.quantity > 0);
+            
+            closeSaleModal();
+            updateAllDisplays();
+            showMessage(`Venda de ${quantity} sacas de ${productData[currentProduct].name} registrada com sucesso!`, 'success');
+        }
+
+        // Employee management
+        function updateEmployeeDisplay() {
+            const tbody = document.getElementById('employeeTableBody');
+            tbody.innerHTML = '';
+            
+            employees.forEach(emp => {
+                const row = document.createElement('tr');
+                const cultureColors = {
+                    cafe: 'bg-amber-100 text-amber-800',
+                    soja: 'bg-green-100 text-green-800',
+                    milho: 'bg-yellow-100 text-yellow-800'
+                };
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${emp.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${emp.function}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full ${cultureColors[emp.culture]}">
+                            ${emp.culture.charAt(0).toUpperCase() + emp.culture.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">R$ ${emp.salary.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${emp.hours}h</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="editEmployee(${emp.id})" class="text-blue-600 hover:text-blue-900 mr-3">Editar</button>
+                        <button onclick="deleteEmployee(${emp.id})" class="text-red-600 hover:text-red-900">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Update stats
+            document.getElementById('totalEmployees').textContent = employees.length;
+            document.getElementById('cafeEmployees').textContent = employees.filter(e => e.culture === 'cafe').length;
+            document.getElementById('sojaEmployees').textContent = employees.filter(e => e.culture === 'soja').length;
+            document.getElementById('milhoEmployees').textContent = employees.filter(e => e.culture === 'milho').length;
+        }
+
+        function openEmployeeModal() {
+            document.getElementById('employeeModal').classList.remove('hidden');
+            document.getElementById('employeeModal').classList.add('flex');
+        }
+
+        function closeEmployeeModal() {
+            document.getElementById('employeeModal').classList.add('hidden');
+            document.getElementById('employeeModal').classList.remove('flex');
+            document.getElementById('empName').value = '';
+            document.getElementById('empFunction').value = '';
+            document.getElementById('empCulture').value = '';
+            document.getElementById('empSalary').value = '';
+            document.getElementById('empHours').value = '44';
+        }
+
+        function saveEmployee(event) {
+            event.preventDefault();
+            
+            const newEmployee = {
+                id: employees.length + 1,
+                name: document.getElementById('empName').value,
+                function: document.getElementById('empFunction').value,
+                culture: document.getElementById('empCulture').value,
+                salary: parseFloat(document.getElementById('empSalary').value),
+                hours: parseInt(document.getElementById('empHours').value)
+            };
+            
+            employees.push(newEmployee);
+            closeEmployeeModal();
+            updateEmployeeDisplay();
+            updateMachineryDriverOptions();
+            showMessage('Funcionário cadastrado com sucesso!', 'success');
+        }
+
+        function deleteEmployee(id) {
+            if (showConfirm('Tem certeza que deseja excluir este funcionário?')) {
+                employees = employees.filter(e => e.id !== id);
+                updateEmployeeDisplay();
+                updateMachineryDriverOptions();
+                showMessage('Funcionário excluído com sucesso!', 'success');
+            }
+        }
+
+        // Machinery management
+        function updateMachineryDisplay() {
+            const tbody = document.getElementById('machineryTableBody');
+            tbody.innerHTML = '';
+            
+            machinery.forEach(mach => {
+                const row = document.createElement('tr');
+                const cultureColors = {
+                    cafe: 'bg-amber-100 text-amber-800',
+                    soja: 'bg-green-100 text-green-800',
+                    milho: 'bg-yellow-100 text-yellow-800'
+                };
+                
+                const statusColors = {
+                    operando: 'bg-green-100 text-green-800',
+                    manutencao: 'bg-yellow-100 text-yellow-800',
+                    parado: 'bg-red-100 text-red-800'
+                };
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${mach.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${mach.driver}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full ${cultureColors[mach.culture]}">
+                            ${mach.culture.charAt(0).toUpperCase() + mach.culture.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${mach.hours}h</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${mach.fuel}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full ${statusColors[mach.status]}">
+                            ${mach.status.charAt(0).toUpperCase() + mach.status.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="editMachinery(${mach.id})" class="text-blue-600 hover:text-blue-900 mr-3">Editar</button>
+                        <button onclick="deleteMachinery(${mach.id})" class="text-red-600 hover:text-red-900">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Update stats
+            document.getElementById('totalMachinery').textContent = machinery.length;
+            document.getElementById('operatingMachinery').textContent = machinery.filter(m => m.status === 'operando').length;
+            document.getElementById('maintenanceMachinery').textContent = machinery.filter(m => m.status === 'manutencao').length;
+            document.getElementById('stoppedMachinery').textContent = machinery.filter(m => m.status === 'parado').length;
+        }
+
+        function updateMachineryDriverOptions() {
+            const select = document.getElementById('machDriver');
+            select.innerHTML = '<option value="">Selecione...</option>';
+            
+            employees.forEach(emp => {
+                const option = document.createElement('option');
+                option.value = emp.name;
+                option.textContent = emp.name;
+                select.appendChild(option);
+            });
+        }
+
+        function openMachineryModal() {
+            updateMachineryDriverOptions();
+            document.getElementById('machineryModal').classList.remove('hidden');
+            document.getElementById('machineryModal').classList.add('flex');
+        }
+
+        function closeMachineryModal() {
+            document.getElementById('machineryModal').classList.add('hidden');
+            document.getElementById('machineryModal').classList.remove('flex');
+            document.getElementById('machName').value = '';
+            document.getElementById('machDriver').value = '';
+            document.getElementById('machCulture').value = '';
+            document.getElementById('machHours').value = '';
+            document.getElementById('machFuel').value = '';
+            document.getElementById('machStatus').value = 'operando';
+        }
+
+        function saveMachinery(event) {
+            event.preventDefault();
+            
+            const newMachinery = {
+                id: machinery.length + 1,
+                name: document.getElementById('machName').value,
+                driver: document.getElementById('machDriver').value,
+                culture: document.getElementById('machCulture').value,
+                hours: parseInt(document.getElementById('machHours').value),
+                fuel: parseFloat(document.getElementById('machFuel').value),
+                status: document.getElementById('machStatus').value
+            };
+            
+            machinery.push(newMachinery);
+            closeMachineryModal();
+            updateMachineryDisplay();
+            showMessage('Maquinário cadastrado com sucesso!', 'success');
+        }
+
+        function deleteMachinery(id) {
+            if (showConfirm('Tem certeza que deseja excluir este equipamento?')) {
+                machinery = machinery.filter(m => m.id !== id);
+                updateMachineryDisplay();
+                showMessage('Equipamento excluído com sucesso!', 'success');
+            }
+        }
+
+        // Stock management
+        function updateStockDisplay() {
+            const tbody = document.getElementById('stockTableBody');
+            tbody.innerHTML = '';
+            
+            stock.forEach(item => {
+                const row = document.createElement('tr');
+                const productColors = {
+                    cafe: 'bg-amber-100 text-amber-800',
+                    soja: 'bg-green-100 text-green-800',
+                    milho: 'bg-yellow-100 text-yellow-800'
+                };
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full ${productColors[item.product]}">
+                            ${item.product.charAt(0).toUpperCase() + item.product.slice(1)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.quantity} sacas</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.quality}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.warehouse}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(item.date).toLocaleDateString('pt-BR')}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onclick="editStock(${item.id})" class="text-blue-600 hover:text-blue-900 mr-3">Editar</button>
+                        <button onclick="deleteStock(${item.id})" class="text-red-600 hover:text-red-900">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            // Update stock totals
+            document.getElementById('cafeStock').textContent = stock.filter(s => s.product === 'cafe').reduce((total, s) => total + s.quantity, 0);
+            document.getElementById('sojaStock').textContent = stock.filter(s => s.product === 'soja').reduce((total, s) => total + s.quantity, 0);
+            document.getElementById('milhoStock').textContent = stock.filter(s => s.product === 'milho').reduce((total, s) => total + s.quantity, 0);
+        }
+
+        function openStockModal() {
+            document.getElementById('stockModal').classList.remove('hidden');
+            document.getElementById('stockModal').classList.add('flex');
+        }
+
+        function closeStockModal() {
+            document.getElementById('stockModal').classList.add('hidden');
+            document.getElementById('stockModal').classList.remove('flex');
+            document.getElementById('stockProduct').value = '';
+            document.getElementById('stockQuantity').value = '';
+            document.getElementById('stockQuality').value = '';
+            document.getElementById('stockWarehouse').value = '';
+        }
+
+        function saveStock(event) {
+            event.preventDefault();
+            
+            const newStock = {
+                id: stock.length + 1,
+                product: document.getElementById('stockProduct').value,
+                quantity: parseInt(document.getElementById('stockQuantity').value),
+                quality: document.getElementById('stockQuality').value,
+                warehouse: document.getElementById('stockWarehouse').value,
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            stock.push(newStock);
+            closeStockModal();
+            updateStockDisplay();
+            updateMTDDisplay(); // Update MTD stock display
+            showMessage('Entrada de estoque registrada com sucesso!', 'success');
+        }
+
+        function deleteStock(id) {
+            if (showConfirm('Tem certeza que deseja excluir esta entrada de estoque?')) {
+                stock = stock.filter(s => s.id !== id);
+                updateStockDisplay();
+                updateMTDDisplay(); // Update MTD stock display
+                showMessage('Entrada de estoque excluída com sucesso!', 'success');
+            }
+        }
+
+        // Reports
+        function generateSalesReport() {
+            const reportContent = document.getElementById('reportContent');
+            const totalSales = Object.keys(productData).reduce((total, product) => {
+                const productStock = stock.filter(s => s.product === product).reduce((sum, s) => sum + s.quantity, 0);
+                return total + (productStock * productData[product].currentPrice);
+            }, 0);
+            
+            reportContent.innerHTML = `
+                <h4 class="font-bold mb-4">Relatório de Vendas - ${new Date().toLocaleDateString('pt-BR')}</h4>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-amber-50 p-4 rounded">
+                            <h5 class="font-medium text-amber-800">Café</h5>
+                            <p class="text-2xl font-bold text-amber-600">R$ ${(stock.filter(s => s.product === 'cafe').reduce((sum, s) => sum + s.quantity, 0) * productData.cafe.currentPrice).toLocaleString('pt-BR')}</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded">
+                            <h5 class="font-medium text-green-800">Soja</h5>
+                            <p class="text-2xl font-bold text-green-600">R$ ${(stock.filter(s => s.product === 'soja').reduce((sum, s) => sum + s.quantity, 0) * productData.soja.currentPrice).toLocaleString('pt-BR')}</p>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded">
+                            <h5 class="font-medium text-yellow-800">Milho</h5>
+                            <p class="text-2xl font-bold text-yellow-600">R$ ${(stock.filter(s => s.product === 'milho').reduce((sum, s) => sum + s.quantity, 0) * productData.milho.currentPrice).toLocaleString('pt-BR')}</p>
+                        </div>
+                    </div>
+                    <div class="border-t pt-4">
+                        <p class="text-lg"><strong>Valor Total do Estoque: R$ ${totalSales.toLocaleString('pt-BR')}</strong></p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('reportResults').classList.remove('hidden');
+        }
+
+        function generatePayrollReport() {
+            const reportContent = document.getElementById('reportContent');
+            const totalPayroll = employees.reduce((total, emp) => total + emp.salary, 0);
+            
+            reportContent.innerHTML = `
+                <h4 class="font-bold mb-4">Folha de Pagamento - ${new Date().toLocaleDateString('pt-BR')}</h4>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-amber-50 p-4 rounded">
+                            <h5 class="font-medium text-amber-800">Café</h5>
+                            <p class="text-lg font-bold text-amber-600">R$ ${employees.filter(e => e.culture === 'cafe').reduce((sum, e) => sum + e.salary, 0).toLocaleString('pt-BR')}</p>
+                            <p class="text-sm text-gray-600">${employees.filter(e => e.culture === 'cafe').length} funcionários</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded">
+                            <h5 class="font-medium text-green-800">Soja</h5>
+                            <p class="text-lg font-bold text-green-600">R$ ${employees.filter(e => e.culture === 'soja').reduce((sum, e) => sum + e.salary, 0).toLocaleString('pt-BR')}</p>
+                            <p class="text-sm text-gray-600">${employees.filter(e => e.culture === 'soja').length} funcionários</p>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded">
+                            <h5 class="font-medium text-yellow-800">Milho</h5>
+                            <p class="text-lg font-bold text-yellow-600">R$ ${employees.filter(e => e.culture === 'milho').reduce((sum, e) => sum + e.salary, 0).toLocaleString('pt-BR')}</p>
+                            <p class="text-sm text-gray-600">${employees.filter(e => e.culture === 'milho').length} funcionários</p>
+                        </div>
+                    </div>
+                    <div class="border-t pt-4">
+                        <p class="text-lg"><strong>Total Mensal: R$ ${totalPayroll.toLocaleString('pt-BR')}</strong></p>
+                        <p class="text-sm text-gray-600">Total de ${employees.length} funcionários</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('reportResults').classList.remove('hidden');
+        }
+
+        function generateMachineryReport() {
+            const reportContent = document.getElementById('reportContent');
+            const totalHours = machinery.reduce((total, mach) => total + mach.hours, 0);
+            const totalFuelConsumption = machinery.reduce((total, mach) => total + (mach.hours * mach.fuel), 0);
+            
+            reportContent.innerHTML = `
+                <h4 class="font-bold mb-4">Relatório de Maquinário - ${new Date().toLocaleDateString('pt-BR')}</h4>
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-blue-50 p-4 rounded">
+                            <h5 class="font-medium text-blue-800">Total de Horas Trabalhadas</h5>
+                            <p class="text-2xl font-bold text-blue-600">${totalHours.toLocaleString()} h</p>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded">
+                            <h5 class="font-medium text-red-800">Consumo Total de Combustível</h5>
+                            <p class="text-2xl font-bold text-red-600">${totalFuelConsumption.toLocaleString()} L</p>
+                        </div>
+                    </div>
+                    <div class="border-t pt-4">
+                        <h5 class="font-medium mb-2">Detalhes por Equipamento:</h5>
+                        <div class="space-y-2">
+                            ${machinery.map(mach => `
+                                <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
+                                    <span class="font-medium">${mach.name}</span>
+                                    <span class="text-sm text-gray-600">${mach.hours}h | ${(mach.hours * mach.fuel).toFixed(1)}L</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('reportResults').classList.remove('hidden');
+        }
+
+        // Utility functions
+        function updateAllDisplays() {
+            updateMTDDisplay();
+            updateEmployeeDisplay();
+            updateMachineryDisplay();
+            updateStockDisplay();
+            checkAlerts();
+        }
+
+        function showMessage(message, type = 'info') {
+            const alertsSection = document.getElementById('alertsSection');
+            const alert = document.createElement('div');
+            
+            const colors = {
+                success: 'bg-green-100 border-green-500 text-green-700',
+                error: 'bg-red-100 border-red-500 text-red-700',
+                info: 'bg-blue-100 border-blue-500 text-blue-700'
+            };
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                info: 'ℹ️'
+            };
+            
+            alert.className = `${colors[type]} border-l-4 p-4 mb-4`;
+            alert.innerHTML = `
+                <div class="flex items-center">
+                    <span class="text-xl mr-2">${icons[type]}</span>
+                    <p class="font-medium">${message}</p>
+                </div>
+            `;
+            
+            alertsSection.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        function showConfirm(message) {
+            // Create inline confirmation instead of browser confirm
+            return new Promise((resolve) => {
+                const confirmDiv = document.createElement('div');
+                confirmDiv.className = 'fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50';
+                confirmDiv.innerHTML = `
+                    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Confirmação</h3>
+                        <p class="text-gray-600 mb-6">${message}</p>
+                        <div class="flex space-x-3">
+                            <button onclick="this.parentElement.parentElement.parentElement.remove(); window.tempResolve(false)" class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded font-medium">
+                                Cancelar
+                            </button>
+                            <button onclick="this.parentElement.parentElement.parentElement.remove(); window.tempResolve(true)" class="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-medium">
+                                Confirmar
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(confirmDiv);
+                window.tempResolve = resolve;
+            });
+        }
+
+        // Event listeners
+        document.getElementById('saleQuantity').addEventListener('input', updateSaleSimulation);
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-fill demo credentials
+            document.getElementById('username').value = 'admin';
+            document.getElementById('password').value = 'admin';
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99542306873c9ad4',t:'MTc2MTU4ODQ4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
