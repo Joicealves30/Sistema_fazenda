@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Funcionários</title>
+    <link rel="stylesheet" href="style.css">
+
+
+</head>
+<body>
+    <div class="container">
+
+        <!-- Cabeçalho -->
+        <header class="header">
+            <span class="icon">🌾</span>
+            <div>
+                <h1>Gerenciamento de Funcionários</h1>
+                <p class="subtitle">Cadastre e mantenha as informações da equipe sempre atualizadas</p>
+            </div>
+        </header>
+
+        <!-- Formulário de cadastro -->
+        <section class="form-section">
+            <h2>Adicionar Novo Funcionário</h2>
+
+            <form id="cadastro-funcionario">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" required>
+
+                <label for="idade">Idade:</label>
+                <input type="number" id="idade" name="idade" required>
+
+                <label for="sexo">Sexo:</label>
+                <input type="text" id="sexo" name="sexo" required>
+
+                <label for="cpf">CPF:</label>
+                <input type="text" id="cpf" name="cpf" required>
+
+                <label for="telefone">Telefone:</label>
+                <input type="text" id="telefone" name="telefone" required>
+
+                <label for="endereco">Endereço:</label>
+                <input type="text" id="endereco" name="endereco" required>
+
+                <label for="cargo">Cargo:</label>
+                <input type="text" id="cargo" name="cargo" required>
+
+                <input type="submit" value="Adicionar Funcionário" class="submit-btn">
+            </form>
+        </section>
+
+        <!-- Listagem de funcionários -->
+        <main class="main-content">
+            <div class="search-bar">
+                <input type="text" placeholder="Buscar por nome, cargo ou telefone...">
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Cargo</th>
+                            <th>Contato</th>
+                            <th>Cultura</th>
+                            <th>Carga Horária</th>
+                            <th>Data Cadastro</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Maria Souza</td>
+                            <td>Agrônoma</td>
+                            <td>
+                                <div class="contact-info">
+                                    <span>📞 (11) 98888-8888</span><br>
+                                    <span>✉️ maria@fazenda.com</span>
+                                </div>
+                            </td>
+                            <td>Soja</td>
+                            <td>44 horas/semana</td>
+                            <td>19/02/2024</td>
+                            <td class="actions">
+                                <button class="btn-edit">✏️</button>
+                                <button class="btn-delete">🗑️</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>João Pereira</td>
+                            <td>Tratorista</td>
+                            <td>
+                                <div class="contact-info">
+                                    <span>📞 (11) 99999-9999</span><br>
+                                    <span>✉️ joao@fazenda.com</span>
+                                </div>
+                            </td>
+                            <td>Milho</td>
+                            <td>44 horas/semana</td>
+                            <td>14/01/2024</td>
+                            <td class="actions">
+                                <button class="btn-edit">✏️</button>
+                                <button class="btn-delete">🗑️</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>Carlos Silva</td>
+                            <td>Veterinário</td>
+                            <td>
+                                <div class="contact-info">
+                                    <span>📞 (11) 97777-7777</span><br>
+                                    <span>✉️ carlos@fazenda.com</span>
+                                </div>
+                            </td>
+                            <td>Pecuária</td>
+                            <td>44 horas/semana</td>
+                            <td>10/03/2024</td>
+                            <td class="actions">
+                                <button class="btn-edit">✏️</button>
+                                <button class="btn-delete">🗑️</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

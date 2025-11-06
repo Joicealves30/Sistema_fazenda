@@ -1,0 +1,175 @@
+Maquinários
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciamento de Maquinário - Fazenda Porteira Azul</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8f0;
+            text-align: center;
+            padding: 40px;
+        }
+
+
+        h1 {
+            background-color: green;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+
+        .caixa {
+            background-color: white;
+            width: 350px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+
+        input, select {
+            padding: 10px;
+            width: 90%;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+
+
+        button {
+            background-color: #2e8b57;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 95%;
+        }
+
+
+        button:hover {
+            background-color: #1e6b40;
+        }
+
+
+        table {
+            width: 90%;
+            margin: 40px auto;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+
+        th {
+            background-color: #2e8b57;
+            color: white;
+        }
+
+
+        td {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+
+    <h1>Gerenciamento de Maquinário</h1>
+    <h2>Controle de Maquinário</h2>
+
+
+    <!-- Caixa de registro único -->
+    <div class="caixa">
+        <h3>Adicionar Registro de Maquinário</h3>
+        <input type="text" id="motorista" placeholder="Nome do motorista">
+        <input type="text" id="horas" placeholder="Horas trabalhadas">
+        <input type="text" id="combustivel" placeholder="Litros consumidos">
+        <select id="cultura">
+            <option value="">Selecione a cultura</option>
+            <option value="Soja">Soja</option>
+            <option value="Milho">Milho</option>
+            <option value="Trigo">Trigo</option>
+           
+        </select>
+        <button onclick="adicionarRegistro()">Adicionar Registro</button>
+    </div>
+
+
+    <!-- Tabela de registros -->
+    <table id="tabela-registros">
+        <thead>
+            <tr>
+                <th>Motorista</th>
+                <th>Horas Trabalhadas</th>
+                <th>Combustível (L)</th>
+                <th>Cultura</th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+
+    <script>
+        function adicionarRegistro() {
+            const motorista = document.getElementById('motorista').value.trim();
+            const horas = document.getElementById('horas').value.trim();
+            const combustivel = document.getElementById('combustivel').value.trim();
+            const cultura = document.getElementById('cultura').value;
+
+
+            if (motorista === '' || horas === '' || combustivel === '' || cultura === '') {
+                alert('Preencha todos os campos antes de adicionar o registro.');
+                return;
+            }
+
+
+            if (horas <= 0 || combustivel <= 0) {
+                alert('Digite valores válidos para horas e combustível.');
+                return;
+            }
+
+
+            const tabela = document.querySelector('#tabela-registros tbody');
+            const data = new Date().toLocaleDateString('pt-BR');
+
+
+            const novaLinha = tabela.insertRow();
+            novaLinha.innerHTML = `
+                <td>${motorista}</td>
+                <td>${horas}</td>
+                <td>${combustivel}</td>
+                <td>${cultura}</td>
+                <td>${data}</td>
+            `;
+
+
+            // Limpa os campos
+            document.getElementById('motorista').value = '';
+            document.getElementById('horas').value = '';
+            document.getElementById('combustivel').value = '';
+            document.getElementById('cultura').value = '';
+        }
+    </script>
+
+
+</body>
+</html>
+
+
+
+

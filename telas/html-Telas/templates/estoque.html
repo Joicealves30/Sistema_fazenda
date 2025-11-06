@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Fazenda Porteira Azul</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8f0;
+            text-align: center;
+            padding: 40px;
+        }
+
+
+        h1 {
+            background-color: green;
+            color: white;
+            font-size: 50px;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+
+        .caixa {
+            background-color: white;
+            width: 450px;
+            margin: 30px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+
+        input, select {
+            padding: 10px;
+            width: 90%; /* largura uniforme para todos os campos */
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+
+
+        button {
+            background-color: #2e8b57;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 95%;
+            font-size: 16px;
+        }
+
+
+        button:hover {
+            background-color: #1e6b40;
+        }
+
+
+        .mensagem {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #2e8b57;
+        }
+    </style>
+</head>
+<body>
+
+
+    <h1>Gerenciamento de Estoque</h1>
+
+
+    <div class="caixa">
+        <h2>Adicionar Saca ao Estoque</h2>
+
+
+        <!-- Tipo de saca -->
+        <select id="saca">
+            <option value="">Selecione o tipo de saca</option>
+            <option value="30">Saca de 30 kg</option>
+            <option value="50">Saca de 50 kg</option>
+            <option value="60">Saca de 60 kg</option>
+            <option value="75">Saca de 75 kg</option>
+        </select>
+
+
+        <!-- Quantidade -->
+        <input type="number" id="quantidade" placeholder="Quantidade de sacas">
+
+
+        <!-- Qualidade (classificação de mercado) -->
+        <select id="qualidade">
+            <option value="">Selecione a qualidade</option>
+            <option value="Premium">Premium</option>
+            <option value="Comum">Comum</option>
+            <option value="Exportação">Exportação</option>
+        </select>
+
+
+        <!-- Botão para adicionar saca + qualidade -->
+        <button onclick="adicionarSaca()">Adicionar Saca</button>
+
+
+        <div class="mensagem" id="mensagem"></div>
+    </div>
+
+
+    <script>
+        const estoque = [];
+
+
+        function adicionarSaca() {
+            const saca = document.getElementById('saca').value;
+            const quantidade = parseInt(document.getElementById('quantidade').value);
+            const qualidade = document.getElementById('qualidade').value;
+            const mensagem = document.getElementById('mensagem');
+
+
+            if (saca === '') {
+                alert('Selecione o tipo de saca.');
+                return;
+            }
+            if (isNaN(quantidade) || quantidade <= 0) {
+                alert('Digite uma quantidade válida de sacas.');
+                return;
+            }
+            if (qualidade === '') {
+                alert('Selecione a qualidade (classificação de mercado).');
+                return;
+            }
+
+
+            const pesoTotal = saca * quantidade;
+            const data = new Date().toLocaleDateString('pt-BR');
+
+
+            estoque.push({ tipo: saca, quantidade, qualidade, pesoTotal, data });
+
+
+            mensagem.textContent = `✅ ${quantidade} sacas de ${saca} kg (${qualidade}) adicionadas. Peso total: ${pesoTotal} kg. (${data})`;
+
+
+            document.getElementById('saca').value = '';
+            document.getElementById('quantidade').value = '';
+            document.getElementById('qualidade').value = '';
+        }
+    </script>
+
+
+</body>
+</html>
+
+
+

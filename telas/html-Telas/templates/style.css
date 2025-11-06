@@ -1,0 +1,235 @@
+/* =========================
+   RESET E CONFIGURAÇÕES BÁSICAS
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f7;
+    color: #2c3e50;
+    line-height: 1.6;
+}
+
+/* =========================
+   CONTAINER GERAL
+========================= */
+.container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 1px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   CABEÇALHO
+========================= */
+.header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 10px;
+}
+
+.header .icon {
+    font-size: 42px;
+}
+
+.header h1 {
+    font-size: 26px;
+    color: #2e7d32;
+}
+
+.header .subtitle {
+    font-size: 14px;
+    color: #777;
+}
+
+/* =========================
+   FORMULÁRIO DE CADASTRO
+========================= */
+.form-section {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 1px solid #ddd;
+}
+
+.form-section h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+form label {
+    display: block;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #555;
+}
+
+form input[type="text"],
+form input[type="number"],
+form input[type="email"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    transition: border-color 0.3s;
+}
+
+form input:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+.submit-btn {
+    display: block;
+    width: 50%;
+    margin: 20px auto 0;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover {
+    background-color: #2e7d32;
+}
+
+/* =========================
+   ÁREA PRINCIPAL / TABELA
+========================= */
+.main-content {
+    background: #fff;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.search-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+/* BOTÃO ADICIONAR (caso queira usar no futuro) */
+.btn-add {
+    padding: 10px 20px;
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-add:hover {
+    background-color: #1b5e20;
+}
+
+/* =========================
+   TABELA DE FUNCIONÁRIOS
+========================= */
+.table-container {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.data-table th {
+    background-color: #4CAF50;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.data-table tr:nth-child(even) {
+    background-color: #f8f8f8;
+}
+
+.data-table tr:hover {
+    background-color: #eafbea;
+}
+
+/* BOTÕES DE AÇÃO */
+.actions button {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    margin-right: 4px;
+    font-size: 16px;
+}
+
+.btn-edit {
+    background-color: #ffd966;
+    transition: 0.3s;
+}
+
+.btn-delete {
+    background-color: #ff6b6b;
+    color: white;
+    transition: 0.3s;
+}
+
+.btn-edit:hover {
+    background-color: #f0c741;
+}
+
+.btn-delete:hover {
+    background-color: #e64a4a;
+}
+
+/* =========================
+   RESPONSIVIDADE
+========================= */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    .form-section {
+        padding: 15px;
+    }
+
+    .submit-btn {
+        width: 100%;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 8px;
+        font-size: 13px;
+    }
+}
